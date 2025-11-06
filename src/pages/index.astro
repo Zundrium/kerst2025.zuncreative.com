@@ -1,5 +1,5 @@
 ---
-
+import ThreeScene from '../components/ThreeScene.astro';
 ---
 
 <html lang="en">
@@ -8,9 +8,14 @@
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Astro Three.js</title>
+		<style>
+			body {
+				margin: 0;
+			}
+		</style>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<ThreeScene />
 	</body>
 </html>
