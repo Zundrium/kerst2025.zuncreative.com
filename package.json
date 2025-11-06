@@ -9,6 +9,9 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@babylonjs/core": "^8.35.0",
+    "@babylonjs/inspector": "^8.35.0",
+    "@babylonjs/loaders": "^8.35.0",
     "@mkkellogg/gaussian-splats-3d": "^0.4.7",
     "astro": "^5.15.3",
     "three": "^0.181.0"
