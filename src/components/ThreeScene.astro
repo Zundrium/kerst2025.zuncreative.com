@@ -72,7 +72,7 @@
 	function rotateCamera() {
 		if (!isLoaded || isUserInteracting) return; // Stop if user is interacting
 
-		angle += 0.001; // Adjust speed
+		angle += 0.0; // Adjust speed
 
 		// Calculate new position orbiting the y-axis (which seems to be Z or something else in this viewer based on cameraUp but let's try standard horizontal orbit)
 		// The viewer uses cameraUp [0,-1,0], so Y is down?
