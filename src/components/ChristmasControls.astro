@@ -1,0 +1,149 @@
+---
+
+---
+
+<div id="christmas-controls">
+    <div class="control-group">
+        <button id="mute-btn" aria-label="Toggle Mute">
+            <!-- Speaker Icon -->
+            <svg
+                id="icon-unmuted"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"
+                ></polygon><path
+                    d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"
+                ></path></svg
+            >
+            <!-- Mute Icon (hidden by default) -->
+            <svg
+                id="icon-muted"
+                class="hidden"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"
+                ></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line
+                    x1="17"
+                    y1="9"
+                    x2="23"
+                    y2="15"></line></svg
+            >
+        </button>
+        <input
+            type="range"
+            id="volume-slider"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0.5"
+            aria-label="Volume"
+        />
+    </div>
+    <audio id="bg-music" loop>
+        <source src="/audio/jazz-christmas-432315.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+    </audio>
+</div>
+
+<style>
+    #christmas-controls {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        backdrop-filter: blur(5px);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .control-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    #mute-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #c0392b;
+        padding: 0;
+        display: flex;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    #volume-slider {
+        width: 80px;
+        accent-color: #27ae60;
+    }
+</style>
+
+<script>
+    const audio = document.getElementById("bg-music") as HTMLAudioElement;
+    const muteBtn = document.getElementById("mute-btn");
+    const volumeSlider = document.getElementById(
+        "volume-slider",
+    ) as HTMLInputElement;
+    const iconUnmuted = document.getElementById("icon-unmuted");
+    const iconMuted = document.getElementById("icon-muted");
+
+    // Start with 50% volume
+    if (audio) audio.volume = 0.5;
+
+    function updateIcon() {
+        if (audio.muted || audio.volume === 0) {
+            iconUnmuted?.classList.add("hidden");
+            iconMuted?.classList.remove("hidden");
+        } else {
+            iconUnmuted?.classList.remove("hidden");
+            iconMuted?.classList.add("hidden");
+        }
+    }
+
+    muteBtn?.addEventListener("click", () => {
+        if (audio) {
+            audio.muted = !audio.muted;
+            updateIcon();
+        }
+    });
+
+    volumeSlider?.addEventListener("input", (e) => {
+        if (audio && e.target instanceof HTMLInputElement) {
+            audio.volume = parseFloat(e.target.value);
+            if (audio.volume > 0 && audio.muted) {
+                audio.muted = false;
+            }
+            updateIcon();
+        }
+    });
+
+    // Attempt to play automatically (might be blocked by browser policy)
+    // We can try to play on any user interaction or just when the page loads
+    // For now, let's try on load, but browser will likely block until interaction.
+    // We'll leave it to user to unmute/interact? Or we can trigger it when the "Open Here" interaction happens on loading screen/dialog.
+    // Let's rely on the user interacting with the page (closing dialog etc).
+
+    // Listen for a "start-experience" event to try playing music
+    window.addEventListener("start-experience", () => {
+        audio?.play().catch((e) => console.log("Autoplay prevented:", e));
+    });
+</script>

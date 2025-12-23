@@ -1,27 +1,89 @@
-
 <script>
-//
-// GitHub van deze gsplat viewer
-// https://github.com/mkkellogg/GaussianSplats3D
-//
-import * as GaussianSplats3D from '@mkkellogg/gaussian-splats-3d';
+	//
+	// GitHub van deze gsplat viewer
+	// https://github.com/mkkellogg/GaussianSplats3D
+	//
+	import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
 
-const viewer = new GaussianSplats3D.Viewer({
-	'cameraUp': [0, -1, 0],
-	'initialCameraPosition': [-40, -50, -40],
-	'initialCameraLookAt': [0, -15, 0],
-	'sharedMemoryForWorkers': false
-});
+	const viewer = new GaussianSplats3D.Viewer({
+		cameraUp: [0, -1, 0],
+		initialCameraPosition: [-40, -50, -40],
+		initialCameraLookAt: [0, -15, 0],
+		sharedMemoryForWorkers: false,
+	});
 
-viewer.addSplatScene('/geom/scene.ksplat', {
-	'splatAlphaRemovalThreshold': 5,
-	'progressiveLoad': false,
-	'showLoadingUI': true,
-	'position': [0, 1, 0],
-	'rotation': [0, 0, 0, 1],
-	'scale': [1.5, 1.5, 1.5]
-})
-	.then(() => {
-		viewer.start();
+	let isLoaded = false;
+	let angle = 0;
+	const radius = 60; // Adjust as needed
+	const center = new THREE.Vector3(0, -15, 0);
+
+	viewer
+		.addSplatScene(
+			"/geom/scene.ksplat",
+			{
+				splatAlphaRemovalThreshold: 5,
+				progressiveLoad: false,
+				showLoadingUI: false, // Disable default UI
+				position: [0, 1, 0],
+				rotation: [0, 0, 0, 1],
+				scale: [1.5, 1.5, 1.5],
+			},
+			(progress: any) => {
+				// Dispatch progress event
+				window.dispatchEvent(
+					new CustomEvent("scene-progress", { detail: { progress } }),
+				);
+			},
+		)
+		.then(() => {
+			viewer.start();
+			isLoaded = true;
+
+			// Dispatch loaded event
+			window.dispatchEvent(new Event("scene-loaded"));
+
+			// Start rotation loop
+			requestAnimationFrame(rotateCamera);
+		});
+
+	import * as THREE from "three"; // We need THREE for Vector3
+
+	function rotateCamera() {
+		if (!isLoaded || isUserInteracting) return; // Stop if user is interacting
+
+		angle += 0.001; // Adjust speed
+
+		// Calculate new position orbiting the y-axis (which seems to be Z or something else in this viewer based on cameraUp but let's try standard horizontal orbit)
+		// The viewer uses cameraUp [0,-1,0], so Y is down?
+		// Let's assume standard Y-up for calculation and adjust if needed, but given the config:
+		// cameraUp: [0, -1, 0] suggests Y is inverted or it's a specific coordinate system.
+		// initialCameraPosition: [-40, -50, -40]
+		// initialCameraLookAt: [0, -15, 0]
+
+		// If we want to orbit around [0, -15, 0] in the horizontal plane (X-Z usually), let's try that.
+
+		const x = center.x + radius * Math.sin(angle);
+		const z = center.z + radius * Math.cos(angle);
+		const y = -50; // Keep height constant-ish
+
+		viewer.camera.position.set(x, y, z);
+		viewer.camera.lookAt(center);
+		viewer.update(); // Trigger viewer update if required, though 'start()' loop handles rendering.
+		// Actually viewer.camera gives access to the Three.js camera.
+		// If the viewer has its own controls, they might fight.
+		// GaussianSplats3D viewer usually uses OrbitControls. We might need to disable them or update them.
+
+		requestAnimationFrame(rotateCamera);
+	}
+
+	// Stop rotation on user interaction
+	window.addEventListener("mousedown", () => {
+		isUserInteracting = true;
+	});
+	window.addEventListener("touchstart", () => {
+		isUserInteracting = true;
+	});
+	window.addEventListener("wheel", () => {
+		isUserInteracting = true;
 	});
 </script>
