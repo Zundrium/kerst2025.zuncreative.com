@@ -204,7 +204,7 @@
 
     if (closeBtn) {
         closeBtn.addEventListener("click", (e) => {
-            e.stopPropagation(); // Prevent card flip
+            // e.stopPropagation(); // Removed to allow click to bubble to document for music autoplay
             closeDialog();
         });
     }

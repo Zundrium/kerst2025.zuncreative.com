@@ -68,6 +68,7 @@
         background: rgba(255, 255, 255, 0.8);
         padding: 0.5rem 1rem;
         border-radius: 2rem;
+        z-index: 100;
     }
 
     .control-group {
@@ -140,8 +141,20 @@
     // We'll leave it to user to unmute/interact? Or we can trigger it when the "Open Here" interaction happens on loading screen/dialog.
     // Let's rely on the user interacting with the page (closing dialog etc).
 
-    // Listen for a "start-experience" event to try playing music
-    window.addEventListener("start-experience", () => {
-        audio?.play().catch((e) => console.log("Autoplay prevented:", e));
-    });
+    // Play music on the first user interaction (click) to bypass autoplay policy
+    const playAudio = () => {
+        if (audio && audio.paused) {
+            audio
+                .play()
+                .then(() => {
+                    // Remove the listener once music starts
+                    document.removeEventListener("click", playAudio);
+                })
+                .catch((e) => {
+                    console.log("Autoplay check failed on click:", e);
+                });
+        }
+    };
+
+    document.addEventListener("click", playAudio);
 </script>
