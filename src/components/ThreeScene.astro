@@ -4,6 +4,7 @@
 	// https://github.com/mkkellogg/GaussianSplats3D
 	//
 	import * as GaussianSplats3D from "@mkkellogg/gaussian-splats-3d";
+	import * as THREE from "three";
 
 	const viewer = new GaussianSplats3D.Viewer({
 		cameraUp: [0, -1, 0],
@@ -13,6 +14,7 @@
 	});
 
 	let isLoaded = false;
+	let isUserInteracting = false;
 	let angle = 0;
 	const radius = 60; // Adjust as needed
 	const center = new THREE.Vector3(0, -15, 0);
@@ -45,8 +47,6 @@
 			// Start rotation loop
 			requestAnimationFrame(rotateCamera);
 		});
-
-	import * as THREE from "three"; // We need THREE for Vector3
 
 	function rotateCamera() {
 		if (!isLoaded || isUserInteracting) return; // Stop if user is interacting
