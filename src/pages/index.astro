@@ -22,6 +22,9 @@ import ChristmasControls from "../components/ChristmasControls.astro";
 		</style>
 	</head>
 	<body>
+		<a href="https://zuncreative.com" class="site-logo">
+			<img src="/svg/logo.svg" alt="Logo" />
+		</a>
 		<ThreeScene />
 		<LoadingScreen />
 		<SnowOverlay />
@@ -29,3 +32,24 @@ import ChristmasControls from "../components/ChristmasControls.astro";
 		<ChristmasControls />
 	</body>
 </html>
+
+<style>
+	/* ... */
+	.site-logo {
+		position: fixed;
+		top: 2rem;
+		left: 2rem;
+		z-index: 100;
+		width: 4rem;
+		transition: opacity 0.3s ease;
+		opacity: 0.7;
+	}
+	.site-logo:hover {
+		opacity: 1;
+	}
+	.site-logo img {
+		width: 100%;
+		height: auto;
+	}
+	/* ... */
+</style>
