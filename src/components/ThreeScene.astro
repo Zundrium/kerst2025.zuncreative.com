@@ -24,25 +24,46 @@
 			"/geom/scene.ksplat",
 			{
 				splatAlphaRemovalThreshold: 5,
-				progressiveLoad: false,
+				sceneRevealMode: GaussianSplats3D.SceneRevealMode.Instant,
 				showLoadingUI: false, // Disable default UI
+				sharedMemoryForWorkers: true,
+				halfPrecisionCovariancesOnGPU: true,
+				optimizeSplatData: true,
+				sphericalHarmonicsDegree: 0,
+				enableOptionalEffects: false,
+				inMemoryCompressionLevel: 2,
+				antialiased: false,
+				sceneFadeInRateMultiplier: 1000000,
 				position: [0, 1, 0],
 				rotation: [0, 0, 0, 1],
 				scale: [1.5, 1.5, 1.5],
 			},
 			(progress: any) => {
 				// Dispatch progress event
+				console.log("Scene progress:", progress);
 				window.dispatchEvent(
 					new CustomEvent("scene-progress", { detail: { progress } }),
 				);
+			},
+			(error: any) => {
+				// Dispatch error event
+				window.dispatchEvent(
+					new CustomEvent("scene-error", { detail: { error } }),
+				);
+			},
+			() => {
+				// Dispatch load event
+				console.log("Scene loaded");
 			},
 		)
 		.then(() => {
 			viewer.start();
 			isLoaded = true;
 
-			// Dispatch loaded event
-			window.dispatchEvent(new Event("scene-loaded"));
+			setTimeout(() => {
+				// Dispatch loaded event
+				window.dispatchEvent(new Event("scene-loaded"));
+			}, 3000);
 
 			// Start rotation loop
 			requestAnimationFrame(rotateCamera);
